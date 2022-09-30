@@ -1,0 +1,33 @@
+---
+- hosts: remote_servers
+  become: true
+  tasks:
+
+   - name: install latest python3, pip3 and Java packages for Ubuntu
+     apt:
+      name:
+        - python3
+        - python3-pip
+        - openjdk-17-jre-headless
+      state: latest
+     when: ansible_distribution == "Ubuntu"
+
+   - name: install latest python3, pip3 and Java packages for CentOS
+     dnf:
+      name:
+        - python3
+        - python3-pip
+        - java-11-openjdk-devel
+      state: latest
+     when: ansible_distribution == "CentOS"
+
+   - name: Create a banner motd for remote servers ssh connection
+     copy:
+       content: "Ansible Manage node by jmaducal\n"
+       dest: /etc/motd
+
+   - name: Create a user
+     user:
+       name: user1
+       password: "{{ 'itsasecret' | password_hash('sha512') }}"
+       state: present
